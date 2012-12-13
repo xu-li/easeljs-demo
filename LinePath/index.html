@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="xu.li<AthenaLightenedMyPath@gmail.com>">
+
+    <link rel="shortcut icon" href="/favicon.ico">
+  </head>
+
+  <body>
+    <div id="container">
+      <canvas id="canvas" style="background-color: black" width="480" height="360"></canvas>
+    </div> <!-- /container -->
+
+    <script src="http://code.createjs.com/easeljs-0.5.0.min.js"></script>
+    <script>
+    window.onload = function () {
+      // add namespace
+      var C = createjs;
+
+      // the main stage
+      var stage = new C.Stage(document.getElementById('canvas'));
+
+      // center point
+      var center = new C.Point(stage.canvas.width / 2, stage.canvas.height / 2);
+
+      // 1. shape for the saved path
+      // 2. use white stroke
+      // 3. move to the default position, center
+      var shape1 = new C.Shape();
+      var graphics1 = shape1.graphics;
+      graphics1.beginStroke(C.Graphics.getRGB(255, 0, 0));
+      graphics1.setStrokeStyle(3, 'round', 'round');
+      graphics1.moveTo(center.x, center.y);
+      stage.addChild(shape1);
+
+      // shape for dynamic path
+      var shape2 = new C.Shape();
+      var graphics2 = shape2.graphics;
+      graphics2.beginStroke(C.Graphics.getRGB(255, 255, 255));
+      graphics2.moveTo(center.x, center.y);
+      stage.addChild(shape2);
+
+      // set up listener
+      var mouseUped = false;
+      stage.onMouseUp = function (e) {
+        mouseUped = true;
+      };
+
+      // last position for the dynamic shape
+      var lastX = center.x;
+      var lastY = center.y;
+
+      // use requestAnimationFrame
+      C.Ticker.useRAF = true;
+
+      // set up ticker
+      C.Ticker.addListener(function () {
+        if (mouseUped) {
+          // clear flag for the next tick
+          mouseUped = false;
+
+          // draw the line
+          graphics1.lineTo(stage.mouseX, stage.mouseY);
+
+          // save the last position for dynamic shape
+          lastX = stage.mouseX;
+          lastY = stage.mouseY;
+        } else {
+          // redraw dynamic shape
+          graphics2.clear();
+          graphics2.beginStroke(C.Graphics.getRGB(255, 255, 255));
+          graphics2.moveTo(lastX, lastY);
+          graphics2.lineTo(stage.mouseX, stage.mouseY);
+        }
+        
+        // draw
+        stage.update();
+      });
+    };
+    </script>
+  </body>
+</html>
